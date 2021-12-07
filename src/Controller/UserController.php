@@ -19,13 +19,13 @@ use Symfony\Component\Serializer\Serializer;
 class UserController extends AbstractController
 {
     /**
-     * @Route("/user", name="register", methods={'POST'})
+     * @Route("/user", name="register", methods={"POST"})
      */
     public function new_user(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $user = $serializer->deserialize($request->getContent(), User::class, 'json');
+        $user = $serializer->deserialize($request->getContent(), User::class, "json");
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($user);
@@ -33,7 +33,7 @@ class UserController extends AbstractController
 
         $response = new Response();
 
-        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set("Content-Type", "application/json");
         return $response;
     }
 
@@ -46,18 +46,18 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user", name="get_user", methods={'GET'})
+     * @Route("/user", name="get_user", methods={"GET"})
      */
     public function get_user(Request $request, UserRepository $userRepository): Response
     {
         $response = new Response();
 
         $email = json_decode($request->getContent(), true);
-        $userModel = $userRepository->findOneBy(['email' => $email]);
+        $userModel = $userRepository->findOneBy(["email" => $email]);
 
         $serializer = $this->getSerializer();
 
-        $user = $serializer->serialize($userModel, 'json');
+        $user = $serializer->serialize($userModel, "json");
 
         if ($user) {
             $response->setContent($user);

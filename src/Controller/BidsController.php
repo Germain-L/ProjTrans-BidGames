@@ -43,17 +43,17 @@ class BidsController extends AbstractController
         return new Serializer($normalizers, $encoders);
     }
 
-    #[Route('/bids', name: 'bids', methods: 'GET')]
+    #[Route("/bids", name: "bids", methods: "GET")]
     public function get_bids(Request $request, BidsRepository $bidsRepository): Response
     {
         $response = new Response();
 
         $id = json_decode($request->getContent(), true);
-        $bidsModel = $bidsRepository->findOneBy(['product' => $id]);
+        $bidsModel = $bidsRepository->findOneBy(["product" => $id]);
 
         $serializer = $this->getSerializer();
 
-        $bids = $serializer->serialize($bidsModel, 'json');
+        $bids = $serializer->serialize($bidsModel, "json");
 
         if ($bids) {
             $response->setContent($bids);

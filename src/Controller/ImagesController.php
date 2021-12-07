@@ -14,15 +14,15 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
 
-#[Route('/api', name: 'api')]
+#[Route("/api", name: "api")]
 class ImagesController extends AbstractController
 {
-    #[Route('/images', name: 'images', methods: 'POST')]
+    #[Route("/images", name: "images", methods: "POST")]
     public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $images = $serializer->deserialize($request->getContent(), Images::class, 'json');
+        $images = $serializer->deserialize($request->getContent(), Images::class, "json");
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($images);
@@ -30,7 +30,7 @@ class ImagesController extends AbstractController
 
         $response = new Response();
 
-        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set("Content-Type", "application/json");
         return $response;
     }
 
@@ -42,17 +42,17 @@ class ImagesController extends AbstractController
         return new Serializer($normalizers, $encoders);
     }
 
-    #[Route('/images', name: 'images', methods: 'GET')]
+    #[Route("/images", name: "images", methods: "GET")]
     public function get_images(Request $request, ImagesRepository $imagesRepository): Response
     {
         $response = new Response();
 
         $id_entity = json_decode($request->getContent(), true);
-        $imagesModel = $imagesRepository->findOneBy(['product' => $id_entity]);
+        $imagesModel = $imagesRepository->findOneBy(["product" => $id_entity]);
 
         $serializer = $this->getSerializer();
 
-        $images = $serializer->serialize($imagesModel, 'json');
+        $images = $serializer->serialize($imagesModel, "json");
 
         if ($images) {
             $response->setContent($images);

@@ -15,15 +15,15 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-#[Route('/api', name: 'api')]
+#[Route("/api", name: "api")]
 class CategoryController extends AbstractController
 {
-    #[Route('/category', name: 'category', methods: 'POST')]
+    #[Route("/category", name: "category", methods: "POST")]
     public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $category = $serializer->deserialize($request->getContent(), Category::class, 'json');
+        $category = $serializer->deserialize($request->getContent(), Category::class, "json");
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($category);
@@ -31,7 +31,7 @@ class CategoryController extends AbstractController
 
         $response = new Response();
 
-        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set("Content-Type", "application/json");
         return $response;
     }
 
@@ -43,17 +43,17 @@ class CategoryController extends AbstractController
         return new Serializer($normalizers, $encoders);
     }
 
-    #[Route('/category', name: 'category', methods: 'GET')]
+    #[Route("/category", name: "category", methods: "GET")]
     public function get_category(Request $request, CategoryRepository $categoryRepository): Response
     {
         $response = new Response();
 
         $id = json_decode($request->getContent(), true);
-        $categoryModel = $categoryRepository->findOneBy(['product' => $id]);
+        $categoryModel = $categoryRepository->findOneBy(["product" => $id]);
 
         $serializer = $this->getSerializer();
 
-        $bids = $serializer->serialize($categoryModel, 'json');
+        $bids = $serializer->serialize($categoryModel, "json");
 
         if ($bids) {
             $response->setContent($bids);
