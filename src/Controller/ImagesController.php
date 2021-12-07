@@ -2,9 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Bids;
+use App\Entity\Images;
 use App\Repository\ImagesRepository;
-use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +22,7 @@ class ImagesController extends AbstractController
     {
         $serializer = $this->getSerializer();
 
-        $images = $serializer->deserialize($request->getContent(), Bids::class, 'json');
+        $images = $serializer->deserialize($request->getContent(), Images::class, 'json');
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($images);

@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\Bids;
+use App\Entity\Category;
+use App\Repository\BidsRepository;
+use App\Repository\CategoryRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,7 +23,7 @@ class CategoryController extends AbstractController
     {
         $serializer = $this->getSerializer();
 
-        $category = $serializer->deserialize($request->getContent(), Bids::class, 'json');
+        $category = $serializer->deserialize($request->getContent(), Category::class, 'json');
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($category);
@@ -38,5 +41,28 @@ class CategoryController extends AbstractController
         $normalizers = [new ObjectNormalizer()];
 
         return new Serializer($normalizers, $encoders);
+    }
+
+    #[Route('/category', name: 'category', methods: 'GET')]
+    public function get_category(Request $request, CategoryRepository $categoryRepository): Response
+    {
+        $response = new Response();
+
+        $id = json_decode($request->getContent(), true);
+        $categoryModel = $categoryRepository->findOneBy(['product' => $id]);
+
+        $serializer = $this->getSerializer();
+
+        $bids = $serializer->serialize($categoryModel, 'json');
+
+        if ($bids) {
+            $response->setContent($bids);
+        } else {
+            $response->setContent(json_encode([
+                "bids" => "not found"
+            ]));
+        }
+
+        return $response;
     }
 }

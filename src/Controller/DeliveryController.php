@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Bids;
+use App\Entity\Delivery;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,7 +22,7 @@ class DeliveryController extends AbstractController
     {
         $serializer = $this->getSerializer();
 
-        $delivery = $serializer->deserialize($request->getContent(), Bids::class, 'json');
+        $delivery = $serializer->deserialize($request->getContent(), Delivery::class, 'json');
 
         $entityManager = $this->getDoctrine()->getManager();
         $entityManager->persist($delivery);
