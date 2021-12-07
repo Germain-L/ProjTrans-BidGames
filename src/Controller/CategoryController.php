@@ -12,9 +12,10 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+#[Route('/api', name: 'api')]
 class CategoryController extends AbstractController
 {
-    #[Route('/category', name: 'category')]
+    #[Route('/category', name: 'category', methods: 'POST')]
     public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();

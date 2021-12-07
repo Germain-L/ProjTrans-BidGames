@@ -19,7 +19,7 @@ use Symfony\Component\Serializer\Serializer;
 class UserController extends AbstractController
 {
     /**
-     * @Route("/new_user", name="register")
+     * @Route("/user", name="register", methods={'POST'})
      */
     public function new_user(Request $request): Response
     {
@@ -46,7 +46,7 @@ class UserController extends AbstractController
     }
 
     /**
-     * @Route("/user", name="get_user")
+     * @Route("/user", name="get_user", methods={'GET'})
      */
     public function get_user(Request $request, UserRepository $userRepository): Response
     {

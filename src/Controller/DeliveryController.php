@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Bids;
-use App\Entity\User;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,18 +12,19 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
+
 #[Route('/api', name: 'api')]
-class BidsController extends AbstractController
+class DeliveryController extends AbstractController
 {
-    #[Route('/bids', name: 'bids', methods: 'POST')]
+    #[Route('/delivery', name: 'delivery', methods: 'POST')]
     public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $bids = $serializer->deserialize($request->getContent(), Bids::class, 'json');
+        $delivery = $serializer->deserialize($request->getContent(), Bids::class, 'json');
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($bids);
+        $entityManager->persist($delivery);
         $entityManager->flush();
 
         $response = new Response();
