@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\Auctioneer;
-use mysql_xdevapi\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
