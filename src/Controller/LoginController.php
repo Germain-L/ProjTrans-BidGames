@@ -10,7 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class LoginController extends AbstractController
 {
-    #[Route('/login', name: 'bids', methods: 'GET')]
+    #[Route("/login", name: "bids", methods: "GET")]
     public function index(Request $request, UserRepository $userRepository): Response
     {
         $data = json_decode($request->getContent(), true);
@@ -19,7 +19,7 @@ class LoginController extends AbstractController
         $user = $userRepository->findOneBy(["email" => $email]);
 
         $response = new Response();
-        $response->headers->set('Content-Type', 'application/json');
+        $response->headers->set("Content-Type", "application/json");
 
         if ($user) {
             $response->setContent(json_encode([

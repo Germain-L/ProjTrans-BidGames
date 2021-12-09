@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Bids;
 use App\Entity\User;
+use App\Repository\BidsRepository;
+use App\Repository\ImagesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,5 +41,28 @@ class BidsController extends AbstractController
         $normalizers = [new ObjectNormalizer()];
 
         return new Serializer($normalizers, $encoders);
+    }
+
+    #[Route("/bids", name: "bids", methods: "GET")]
+    public function get_bids(Request $request, BidsRepository $bidsRepository): Response
+    {
+        $response = new Response();
+
+        $id = json_decode($request->getContent(), true);
+        $bidsModel = $bidsRepository->findOneBy(["product" => $id]);
+
+        $serializer = $this->getSerializer();
+
+        $bids = $serializer->serialize($bidsModel, "json");
+
+        if ($bids) {
+            $response->setContent($bids);
+        } else {
+            $response->setContent(json_encode([
+                "bids" => "not found"
+            ]));
+        }
+
+        return $response;
     }
 }
