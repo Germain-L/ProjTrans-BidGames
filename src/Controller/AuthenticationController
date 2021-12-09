@@ -12,22 +12,44 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
+use Doctrine\Persistence\ManagerRegistry;
 
-/**
- * @Route("/api")
- */
-class UserController extends AbstractController
+
+#[Route("/authentication", name: "authentication")]
+class AuthenticationController extends AbstractController
 {
-    /**
-     * @Route("/user", name="register", methods={"POST"})
-     */
-    public function new_user(Request $request): Response
+    #[Route("/login", name: "login")]
+    public function login(Request $request, UserRepository $userRepository): Response
+    {
+        $data = json_decode($request->getContent(), true);
+
+        $email = $data["email"];
+        $user = $userRepository->findOneBy(["email" => $email]);
+
+        $response = new Response();
+        $response->headers->set("Content-Type", "application/json");
+
+        if ($user) {
+            $response->setContent(json_encode([
+                "user_id" => $user->getId()
+            ]));
+        } else {
+            $response->setContent(json_encode([
+                "error" => "not found"
+            ]));
+        }
+
+        return $response;
+    }
+
+    #[Route("/register", name: "register")]
+    public function register(Request $request, UserRepository $userRepository, ManagerRegistry $doctrine): Response
     {
         $serializer = $this->getSerializer();
 
         $user = $serializer->deserialize($request->getContent(), User::class, "json");
 
-        $entityManager = $this->getDoctrine()->getManager();
+        $entityManager = $doctrine->getManager();
         $entityManager->persist($user);
         $entityManager->flush();
 
@@ -43,30 +65,5 @@ class UserController extends AbstractController
         $normalizers = [new ObjectNormalizer()];
 
         return new Serializer($normalizers, $encoders);
-    }
-
-    /**
-     * @Route("/user", name="get_user", methods={"GET"})
-     */
-    public function get_user(Request $request, UserRepository $userRepository): Response
-    {
-        $response = new Response();
-
-        $email = json_decode($request->getContent(), true);
-        $userModel = $userRepository->findOneBy(["email" => $email]);
-
-        $serializer = $this->getSerializer();
-
-        $user = $serializer->serialize($userModel, "json");
-
-        if ($user) {
-            $response->setContent($user);
-        } else {
-            $response->setContent(json_encode([
-                "user" => "not found"
-            ]));
-        }
-
-        return $response;
     }
 }

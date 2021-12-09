@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Entity\Bids;
+use App\Entity\Delivery;
+use App\Repository\DeliveryRepository;
+use App\Repository\ImagesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,22 +15,19 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-/**
- * @Route("/api")
- */
-class UserController extends AbstractController
+
+#[Route("/api", name: "api")]
+class DeliveryController extends AbstractController
 {
-    /**
-     * @Route("/user", name="register", methods={"POST"})
-     */
-    public function new_user(Request $request): Response
+    #[Route("/delivery", name: "delivery", methods: "POST")]
+    public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $user = $serializer->deserialize($request->getContent(), User::class, "json");
+        $delivery = $serializer->deserialize($request->getContent(), Delivery::class, "json");
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
+        $entityManager->persist($delivery);
         $entityManager->flush();
 
         $response = new Response();
@@ -45,25 +44,23 @@ class UserController extends AbstractController
         return new Serializer($normalizers, $encoders);
     }
 
-    /**
-     * @Route("/user", name="get_user", methods={"GET"})
-     */
-    public function get_user(Request $request, UserRepository $userRepository): Response
+    #[Route("/delivery", name: "delivery", methods: "GET")]
+    public function get_delivery(Request $request, DeliveryRepository $deliveryRepository): Response
     {
         $response = new Response();
 
-        $email = json_decode($request->getContent(), true);
-        $userModel = $userRepository->findOneBy(["email" => $email]);
+        $id_entity = json_decode($request->getContent(), true);
+        $deliveryModel = $deliveryRepository->findOneBy(["product" => $id_entity]);
 
         $serializer = $this->getSerializer();
 
-        $user = $serializer->serialize($userModel, "json");
+        $delivery = $serializer->serialize($deliveryModel, "json");
 
-        if ($user) {
-            $response->setContent($user);
+        if ($delivery) {
+            $response->setContent($delivery);
         } else {
             $response->setContent(json_encode([
-                "user" => "not found"
+                "delvery" => "not found"
             ]));
         }
 

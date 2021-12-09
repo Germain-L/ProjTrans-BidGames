@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Bids;
 use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Repository\BidsRepository;
+use App\Repository\ImagesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,27 +15,23 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-/**
- * @Route("/api")
- */
-class UserController extends AbstractController
+#[Route('/api', name: 'api')]
+class BidsController extends AbstractController
 {
-    /**
-     * @Route("/user", name="register", methods={"POST"})
-     */
-    public function new_user(Request $request): Response
+    #[Route('/bids', name: 'bids', methods: 'POST')]
+    public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $user = $serializer->deserialize($request->getContent(), User::class, "json");
+        $bids = $serializer->deserialize($request->getContent(), Bids::class, 'json');
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
+        $entityManager->persist($bids);
         $entityManager->flush();
 
         $response = new Response();
 
-        $response->headers->set("Content-Type", "application/json");
+        $response->headers->set('Content-Type', 'application/json');
         return $response;
     }
 
@@ -45,25 +43,23 @@ class UserController extends AbstractController
         return new Serializer($normalizers, $encoders);
     }
 
-    /**
-     * @Route("/user", name="get_user", methods={"GET"})
-     */
-    public function get_user(Request $request, UserRepository $userRepository): Response
+    #[Route("/bids", name: "bids", methods: "GET")]
+    public function get_bids(Request $request, BidsRepository $bidsRepository): Response
     {
         $response = new Response();
 
-        $email = json_decode($request->getContent(), true);
-        $userModel = $userRepository->findOneBy(["email" => $email]);
+        $id = json_decode($request->getContent(), true);
+        $bidsModel = $bidsRepository->findOneBy(["product" => $id]);
 
         $serializer = $this->getSerializer();
 
-        $user = $serializer->serialize($userModel, "json");
+        $bids = $serializer->serialize($bidsModel, "json");
 
-        if ($user) {
-            $response->setContent($user);
+        if ($bids) {
+            $response->setContent($bids);
         } else {
             $response->setContent(json_encode([
-                "user" => "not found"
+                "bids" => "not found"
             ]));
         }
 

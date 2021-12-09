@@ -2,8 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\User;
-use App\Repository\UserRepository;
+use App\Entity\Images;
+use App\Repository\ImagesRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,22 +13,19 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use Symfony\Component\Serializer\Serializer;
 
-/**
- * @Route("/api")
- */
-class UserController extends AbstractController
+
+#[Route("/api", name: "api")]
+class ImagesController extends AbstractController
 {
-    /**
-     * @Route("/user", name="register", methods={"POST"})
-     */
-    public function new_user(Request $request): Response
+    #[Route("/images", name: "images", methods: "POST")]
+    public function index(Request $request): Response
     {
         $serializer = $this->getSerializer();
 
-        $user = $serializer->deserialize($request->getContent(), User::class, "json");
+        $images = $serializer->deserialize($request->getContent(), Images::class, "json");
 
         $entityManager = $this->getDoctrine()->getManager();
-        $entityManager->persist($user);
+        $entityManager->persist($images);
         $entityManager->flush();
 
         $response = new Response();
@@ -45,25 +42,23 @@ class UserController extends AbstractController
         return new Serializer($normalizers, $encoders);
     }
 
-    /**
-     * @Route("/user", name="get_user", methods={"GET"})
-     */
-    public function get_user(Request $request, UserRepository $userRepository): Response
+    #[Route("/images", name: "images", methods: "GET")]
+    public function get_images(Request $request, ImagesRepository $imagesRepository): Response
     {
         $response = new Response();
 
-        $email = json_decode($request->getContent(), true);
-        $userModel = $userRepository->findOneBy(["email" => $email]);
+        $id_entity = json_decode($request->getContent(), true);
+        $imagesModel = $imagesRepository->findOneBy(["product" => $id_entity]);
 
         $serializer = $this->getSerializer();
 
-        $user = $serializer->serialize($userModel, "json");
+        $images = $serializer->serialize($imagesModel, "json");
 
-        if ($user) {
-            $response->setContent($user);
+        if ($images) {
+            $response->setContent($images);
         } else {
             $response->setContent(json_encode([
-                "user" => "not found"
+                "image" => "not found"
             ]));
         }
 
